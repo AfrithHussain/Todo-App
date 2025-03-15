@@ -2,43 +2,81 @@ import { useState } from "react";
 import { BsTrash3 } from "react-icons/bs";
 
 // eslint-disable-next-line react/prop-types
-function TodoCard({title, delteHandler, id}) {
-
-  let [trashLoader, setTrashLoader] = useState(false) ;
+function TodoCard({ title, delteHandler, id }) {
+  const [trashLoader, setTrashLoader] = useState(false);
   const [deleteToast, setDeleteToast] = useState(false);
 
+  function clickDeleteHandler() {
+    setTrashLoader(true);
+    delteHandler(id);
+    setDeleteToast(true);
+    setTimeout(() => {
+      setDeleteToast(false);
+    }, 1000);
+  }
 
-    function clickDeleteHandler(){
-      setTrashLoader(true)
-      delteHandler(id);
-      setDeleteToast(true); // Show the toast
-        setTimeout(() => {
-          setDeleteToast(false); // Hide the toast after 1 second
-        }, 1000); // 1 second = 1000 milliseconds
-    }
-  
   return (
-    <div>
-        <div className=" mt-7 border border-neutral-500  w-[400px] ml-[590px] p-3 rounded-lg">
-            <div className="flex items-center justify-between px-3">
-            <h1 className="text-xl   text-neutral-700 font-light  ">{title}</h1>
-            <p onClick={()=>{clickDeleteHandler()}} className="hover:text-red-700 cursor-pointer text-xl text-blue-700">{trashLoader ? <div className="flex justify-center items-center">
-              <p className="text-red-700">deleting</p>
-              <div className="animate-spin border-l-white border-t-red-700 border rounded-full p-2"></div> 
-            </div> : <BsTrash3 />}</p>
-            </div>
+    <div className="w-full px-4 sm:px-0">
+      {/* Todo Card */}
+      <div className="mt-4 max-w-md mx-auto bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="flex items-center justify-between p-4">
+          {/* Centered Title */}
+          <h1 className="text-lg text-gray-800 flex-1 text-center truncate">
+            {title}
+          </h1>
 
-            {/* delete toast */}
-            <div className="">
-        {deleteToast && (
-        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-700 text-white py-2 px-4 rounded-md shadow-md">
-          Task Deleted Successfully!
+          {/* Delete Button */}
+          <button
+            onClick={clickDeleteHandler}
+            disabled={trashLoader}
+            className="p-2 rounded-full hover:bg-red-50 transition-colors duration-200 group"
+            aria-label="Delete task"
+          >
+            {trashLoader ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin h-5 w-5 border-2 border-red-500 border-t-transparent rounded-full" />
+              </div>
+            ) : (
+              <BsTrash3 className="text-red-600 group-hover:text-red-700 transition-colors duration-200 w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {/* Progress Bar Animation for Delete Loading */}
+        {trashLoader && (
+          <div className="h-1 bg-gray-200 rounded-b-lg overflow-hidden">
+            <div className="h-full bg-red-500 animate-pulse transition-all duration-1000" />
+          </div>
+        )}
+      </div>
+
+      {/* Delete Toast Notification */}
+      {deleteToast && (
+        <div
+          className="fixed bottom-8 left-[45%] transform -translate-x-1/2 animate-fade-in-up"
+          aria-live="assertive"
+        >
+          <div className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md flex items-center  space-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span>Task deleted successfully!</span>
+          </div>
         </div>
       )}
-        </div>
-        </div>
     </div>
-  )
+  );
 }
 
-export default TodoCard
+export default TodoCard;
